@@ -1,0 +1,139 @@
+<!DOCTYPE HTML><html>
+<head>
+  <title id="page-title">Espresso PID</title> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="highcharts.js"></script>
+  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="jquery-1.10.0.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+   <span class="open-side">
+	   <a href="#" onclick="openSideMenu()">
+		   <svg width="30" height="30">
+			   <path d="M0,5 30,5"   stroke="#fff" stroke-width="5"/>
+			   <path d="M0,14 30,14" stroke="#fff" stroke-width="5"/>
+			   <path d="M0,23 30,23" stroke="#fff" stroke-width="5"/>
+		   </svg>
+	   </a>
+   </span>
+  </nav> 
+
+   <div id="side-menu" class="side-nav">
+	   <a href="#" class="btn-close" onclick="closeSideMenu()">&times;</a>
+	   <a href="#">Home</a>
+	   <a href="settings.html">Settings</a>
+	   <a href="pidsettings.html">PID Settings</a>
+	   <a href="devicesettings.html">Device Settings</a>
+   </div>
+   
+  <div id="main-page" onclick="closeSideMenu()">
+	  <h2 id="main-page-title">Espresso PID</h2>
+	  <div id="chart-temperature" class="container"></div>
+  </div>
+  
+  <h3 id="autotune-header" style="display:none">Auto Tune Progress</h2>
+  <div class="center">
+	  <progress id="autotune-progress" value="0" max="100" style="width: 50%; display:none"/>
+  </div>
+
+  </body>
+<script>
+var targetBoilerTemp = parseFloat(getRawParameter("/boiler_target_temperature"));
+
+var chartT = new Highcharts.Chart({
+  chart:{ renderTo : 'chart-temperature' },
+  title: { text: 'Boiler Temperature' },
+  series: [{
+    showInLegend: false,
+    data: []
+  }],
+  plotOptions: {
+    line: { animation: false,
+      dataLabels: { enabled: true }
+    },
+    series: { color: '#059e8a' }
+  },
+  xAxis: { type: 'datetime',
+    dateTimeLabelFormats: { second: '%H:%M:%S' }
+  },
+  yAxis: {
+    tickInterval: 1.0,
+	tickAmount: 10.0,
+    title: { text: 'Temperature (°C)' },
+	labels: {
+		format: '{value}°C'
+	},
+	plotLines: [
+		{
+			color: '#FF0000', 
+			dashStyle: 'shortdash', 
+			label: { text: 'Target Boiler Temperature'},
+			width: 2, 
+			value: targetBoilerTemp
+		}
+	]
+  },
+  credits: { enabled: false }
+});
+
+setInterval(function () {
+	var xhttp = new XMLHttpRequest();
+	xhttp.onreadystatechange = function() {
+		if (this.readyState == 4 && this.status == 200) {
+			var date = new Date();
+			var localOffset = date.getTimezoneOffset() * 60000;
+
+			var x = date.getTime() - localOffset;
+			var y = parseFloat(this.responseText);		
+				
+			if(chartT.series[0].data.length > 10) {
+				chartT.series[0].addPoint([x, y], true, true, true);
+			} else {
+				chartT.series[0].addPoint([x, y], true, false, true);
+			}
+		}
+	};
+	xhttp.open("GET", "/boiler_temperature", true);
+	xhttp.send();	
+}, 500);
+
+var isAutoTuning = getRawParameter("/pid_autotune");
+if (isAutoTuning == "ON") {
+	var autoTuneHeader = document.getElementById('autotune-header');
+	var autoTuneProgressBar = document.getElementById('autotune-progress');
+
+	autoTuneHeader.style.display='block';
+	autoTuneProgressBar.style.display='block';
+
+	var progressPer = 0.0;
+	var clearAutoTuningStatus = function () {
+		autoTuneHeader.style.display='none';
+		autoTuneProgressBar.style.display='none';
+	}
+	
+	var updateAutoTuningStatus = function () {
+		isAutoTuning = getRawParameter("/pid_autotune");		
+		if (isAutoTuning != "ON") {
+			progressPer = 100.0;
+			autoTuneHeader.textContent = "Auto Tune Finished: " + isAutoTuning;
+			setTimeout (clearAutoTuningStatus, 60000);
+		} else {
+			progressPer += 10.0;
+			setTimeout (updateAutoTuningStatus, 30000);
+		}
+		
+		autoTuneProgressBar.value = progressPer;
+	}
+	
+	updateAutoTuningStatus ();
+}
+
+
+$(document).ready(getPageTitle);
+$(document).ready(getMainPageTitle);
+
+</script>
+</html>

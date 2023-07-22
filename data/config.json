@@ -1,0 +1,10 @@
+{
+	"targetBoilerTemp":92,
+	"kpValue":40,
+	"kiValue":0.8,
+	"kdValue":130,
+	"wifiSSID":"Espresso-PID-AC",
+	"wifiPassword":"Abcd1234",
+	"wifiAPMode":true, 
+	"stationAddr":234
+}

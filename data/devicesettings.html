@@ -1,0 +1,101 @@
+<!DOCTYPE HTML><html>
+<head>
+  <title id="page-title">Espresso PID</title> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="jquery-1.10.0.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="toggle-switch.css"/>  
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+   <span class="open-side">
+	   <a href="#" onclick="openSideMenu()">
+		   <svg width="30" height="30">
+			   <path d="M0,5 30,5"   stroke="#fff" stroke-width="5"/>
+			   <path d="M0,14 30,14" stroke="#fff" stroke-width="5"/>
+			   <path d="M0,23 30,23" stroke="#fff" stroke-width="5"/>
+		   </svg>
+	   </a>
+   </span>
+  </nav> 
+
+   <div id="side-menu" class="side-nav">
+	   <a href="#" class="btn-close" onclick="closeSideMenu()">&times;</a>
+	   <a href="index.html">Home</a>
+	   <a href="settings.html">Settings</a>
+	   <a href="pidsettings.html">PID Settings</a>
+	   <a href="#">Device Settings</a>
+   </div>
+
+  <div id="modal_dialog" class="modal">
+    <div class="modal-content">
+      <div class="modal-container">
+		<button onclick="document.getElementById('modal_dialog').style.display='none'" class="btn" style="float: right"><span>Close</span></button>
+        <p id="modal-text">Some text. Some text. Some text.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-page" onclick="closeSideMenu()">
+	  <div class="center">
+		   <button class="btn" type="button" onclick="setAndSaveDeviceParameters()"><span>Save Parameters</span></button>
+	  </div>
+
+	  <h1>Network Settings</h1>
+
+	  <div class="center">
+		  <div class="group"><input id="wifiSSID" type="text"/><span class="highlight"></span><span class="bar"></span><label type="text-input">SSID</label></div>
+	  </div>
+
+	  <div class="center">
+		  <div class="group"><input id="wifiPassword" type="password"/><span class="highlight"></span><span class="bar"></span><label type="text-input">Password</label></div>
+	  </div>	  
+
+	  <div class="center">
+	  <label class="switch-light switch-candy" style="width: 50%" onclick="">
+	    <input type="checkbox" id="wifiMode">
+	    <span>
+			<span>Access Point</span>
+			<span>Client</span>
+			<a></a>
+	    </span>
+	  </label>
+	  </div>
+
+	  <div class="center">
+		  <div class="group"><input id="stationAddr" type="number" min="0" max="254"/><span class="highlight"></span><span class="bar"></span><label type="text-input">Station Address</label></div>
+	  </div>	  
+
+	  <h1>General</h1>
+	  <div class="center">
+		  <div class="group"><input id="machineName" type="text"/><span class="highlight"></span><span class="bar"></span><label type="text-input">Machine Name</label></div>
+	  </div>
+
+
+	  <h1>Firmware Update</h1>
+	  <h3><span>Current Version: </span> <span id="version"></span></h3>
+	  <h3><span>UI Version: </span> <span id="ui-version"></span></h3>
+	  <div class="center">
+		  <input type='file' name='update' id='file' onchange="document.getElementById('file-name').value = this.files[0].name" style=display:none>
+		  <div class="group"><input id="file-name" type="text"/><span class="highlight"></span><span class="bar"></span><label type="text-input">Filename</label></div>
+		  <button class="btn" type="button"><label id='file-input' for='file'>Choose file...</label></button>
+		  <button class="btn" onclick="uploadFirmware()" type="button"><span>Confirm</span></button>
+	  </div>
+	  <div class="center">
+		  <progress id="file-progress" value="0" max="100" style="width: 50%; display:none"/>
+	  </div>
+  </div>
+  </body>
+<script>
+$(document).ready(getPageTitle);
+$(document).ready(getMachineNameForInput);
+
+$(document).ready(getDeviceParameters);
+$(document).ready(getFirmwareVersion);
+$(document).ready(getUIVersion);
+
+</script>
+</html>

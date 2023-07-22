@@ -1,0 +1,100 @@
+<!DOCTYPE HTML><html>
+<head>
+  <title id="page-title">Espresso PID</title> 
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <script type="text/javascript" src="script.js"></script>
+  <script type="text/javascript" src="jquery-1.10.0.min.js"></script>
+  
+  <link rel="stylesheet" type="text/css" href="toggle-switch.css"/>  
+  <link rel="stylesheet" type="text/css" href="style.css">
+</head>
+<body>
+  <nav class="navbar">
+   <span class="open-side">
+	   <a href="#" onclick="openSideMenu()">
+		   <svg width="30" height="30">
+			   <path d="M0,5 30,5"   stroke="#fff" stroke-width="5"/>
+			   <path d="M0,14 30,14" stroke="#fff" stroke-width="5"/>
+			   <path d="M0,23 30,23" stroke="#fff" stroke-width="5"/>
+		   </svg>
+	   </a>
+   </span>
+  </nav> 
+
+   <div id="side-menu" class="side-nav">
+	   <a href="#" class="btn-close" onclick="closeSideMenu()">&times;</a>
+	   <a href="index.html">Home</a>
+	   <a href="settings.html">Settings</a>
+	   <a href="#">PID Settings</a>
+	   <a href="devicesettings.html">Device Settings</a>
+   </div>
+
+  <div id="modal_dialog" class="modal">
+    <div class="modal-content">
+      <div class="modal-container">
+		<button onclick="document.getElementById('modal_dialog').style.display='none'" class="btn" style="float: right"><span>Close</span></button>
+        <p id="modal-text">Some text. Some text. Some text.</p>
+      </div>
+    </div>
+  </div>
+
+  <div id="main-page" onclick="closeSideMenu()">
+	  <div class="center">
+		   <button class="btn" type="button" onclick="saveParameters()"><span>Save Parameters</span></button>
+	  </div>
+  	  
+	  <h2>Temperature Offset</h2>
+	  <div class="center">
+		  <button class="btn" type="button" onclick="changeParameterBy(-1, $('#temp-offset'), '/temperature_offset')"><span>--</span></button>
+		  <button class="btn" type="button" onclick="changeParameterBy(-0.1, $('#temp-offset'), '/temperature_offset')"><span>-</span></button>
+		  <h3 id="temp-offset">0</h3><h3>°C</h3>
+		  <button class="btn" type="button" onclick="changeParameterBy(0.1, $('#temp-offset'), '/temperature_offset')"><span>+</span></button>
+		  <button class="btn" type="button" onclick="changeParameterBy(1, $('#temp-offset'), '/temperature_offset')"><span>++</span></button>
+	  </div>
+
+	  <h2>Auto Tuning</h2>
+	  <div class="center">
+	  <label class="switch-light switch-candy" style="width: 50%" onclick="setRawParameter('/pid_autotune', document.getElementById('auto-tune').checked.toString(), function (responseText) { document.getElementById('auto-tune').checked = (responseText == 'true'); })">
+	    <input type="checkbox" id="auto-tune">
+	    <span>
+			<span>Off</span>
+			<span>On</span>
+			<a></a>
+	    </span>
+	  </label>
+	  </div>
+
+	  <h1>PID Parameters</h1>
+	  <div class="center">
+		  <div class="group"><input id="proportional-gain" type="number" onchange="setRawParameter('/proportional_gain', this.value.toString(), function (responseText) { this.value = parseFloat(responseText); })"/>
+		  <span class="highlight"></span><span class="bar"></span><label type="text-input">Proportional Gain</label></div>
+	  </div>
+
+	  <div class="center">
+		  <div class="group"><input id="integral-gain" type="number" onchange="setRawParameter('/integral_gain', this.value.toString(), function (responseText) { this.value = parseFloat(responseText); })"/>
+		  <span class="highlight"></span><span class="bar"></span><label type="text-input">Integral Gain</label></div>
+	  </div>
+
+	  <div class="center">
+		  <div class="group"><input id="derivative-gain" type="number" onchange="setRawParameter('/derivative_gain', this.value.toString(), function (responseText) { this.value = parseFloat(responseText); })"/>
+		  <span class="highlight"></span><span class="bar"></span><label type="text-input">Derivative Gain</label></div>
+	  </div>
+
+  </div>
+  </body>
+<script>
+$(document).ready(getPageTitle);
+
+$(document).ready(getParameter($('#temp-offset'), '/temperature_offset'));
+
+$(document).ready(function () {
+	document.getElementById("auto-tune").checked = (getRawParameter("/pid_autotune") == 'ON');
+
+	document.getElementById("proportional-gain").value = parseFloat(getRawParameter("/proportional_gain"));
+	document.getElementById("integral-gain").value = parseFloat(getRawParameter("/integral_gain"));
+	document.getElementById("derivative-gain").value = parseFloat(getRawParameter("/derivative_gain"));
+});
+
+</script>
+</html>
